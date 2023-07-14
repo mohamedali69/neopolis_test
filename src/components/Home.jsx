@@ -4,29 +4,26 @@ import { AiFillCloseCircle } from "react-icons/ai";
 import ImageItem from "./ImageItem";
 import ImageFilter from "./ImageFilter";
 import DeleteDialog from "./shared/DeleteDialog";
+import AddImageModal from "./AddImageModal";
 
 const Home = () => {
-  const {
-    images,
-    isLoading,
-    error,
-    addImage,
-    deleteImage,
-    nextPage,
-    prevPage,
-  } = useContext(ImageContext);
+  const { images, isLoading, error, deleteImage, nextPage, prevPage } =
+    useContext(ImageContext);
 
   const [selectedImage, setSelectedImage] = useState(null);
-  const [imageUrl, setImageUrl] = useState("");
-  const [imageDescription, setImageDescription] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterTags, setFilterTags] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [isOpenModal, setIsOpenModal] = useState(false);
   const [imageId, setImageId] = useState(null);
 
   const handleOpenDialog = (imgId) => {
     setIsOpen(!isOpen);
     setImageId(imgId);
+  };
+
+  const handleOpenModal = () => {
+    setIsOpenModal(!isOpenModal);
   };
 
   const openFullScreen = (image) => {
@@ -40,22 +37,6 @@ const Home = () => {
   const handleDeleteImage = () => {
     deleteImage(imageId);
     handleOpenDialog();
-  };
-
-  const handleAddImage = () => {
-    const newImage = {
-      id: Date.now().toString(),
-      links: {
-        download: imageUrl,
-      },
-      description: imageDescription,
-      category: "Nature", // Added a default category
-      tags: ["outdoors", "landscape"], // Added default tags
-    };
-
-    addImage(newImage);
-    setImageUrl("");
-    setImageDescription("");
   };
 
   const handleFilterCategoryChange = (e) => {
@@ -107,10 +88,11 @@ const Home = () => {
         handleOpenDeleteDialog={handleOpenDialog}
         handleDelete={handleDeleteImage}
       />
+      <AddImageModal isOpenModal={isOpenModal} handleOpenModal={handleOpenModal} />
       <h1 className="text-3xl font-bold mb-4">Welcome To Our Image Gallery</h1>
 
-      <div className="flex mb-4">
-        <div className="flex-1 pr-2">
+      <div className="flex flex-col md:flex-row mb-4 md:justify-between">
+        <div className="mb-2 md:mb-0 md:flex-1 pr-2">
           <ImageFilter
             filterCategory={filterCategory}
             filterTags={filterTags}
@@ -118,29 +100,13 @@ const Home = () => {
             handleFilterTagsChange={handleFilterTagsChange}
           />
         </div>
-        <div className="flex-1 pl-2">
-          <div className="mb-4 flex">
-            <input
-              type="text"
-              placeholder="Image URL"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              className="px-4 py-2 mr-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-            />
-            <input
-              type="text"
-              placeholder="Description"
-              value={imageDescription}
-              onChange={(e) => setImageDescription(e.target.value)}
-              className="px-4 py-2 mr-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-            />
-            <button
-              onClick={handleAddImage}
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-            >
-              Add Image
-            </button>
-          </div>
+        <div className="md:ml-2">
+          <button
+            onClick={handleOpenModal}
+            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+          >
+            Add Image
+          </button>
         </div>
       </div>
 
